@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}AI Career Guidance - Discover Your Ideal Tech Career{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div style="text-align: center; max-width: 800px; margin: 10px auto 40px;">
+    <div class="badge" style="margin-bottom: 16px; padding: 6px 14px; font-size: 0.85rem;">
+        <span>✨ Powered by Scikit-Learn & Machine Learning</span>
+    </div>
+    <h1 style="font-size: 2.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 16px;">
+        Discover the Ideal Tech Career for Your Skills & Passions
+    </h1>
+    <p style="font-size: 1.125rem; color: var(--text-muted); line-height: 1.6;">
+        Evaluate your interests, technical proficiencies, and programming skills to receive tailored career roadmaps, salary benchmarks, and AI recommendations.
+    </p>
+</div>
+
+<!-- Assessment Form Card -->
+<div class="card" style="max-width: 860px; margin: 0 auto 50px; padding: 36px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-main);">Career Assessment Input</h2>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Provide your interests and skills to calculate your career fit score.</p>
+        </div>
+        {% if profile and (profile.skills or profile.career_goal) %}
+        <button type="button" id="autofillBtn" class="btn btn-secondary" style="font-size: 0.85rem; padding: 6px 12px;">
+            <span>⚡ Autofill from Profile</span>
+        </button>
+        {% endif %}
+    </div>
+
+    <form action="/predict" method="POST" id="careerForm">
+        <!-- Interests -->
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">
+                Your Interests & What You Enjoy Doing
+            </label>
+            <textarea name="interest" id="interestInput" rows="3" required
+                placeholder="Example: I love building web applications, designing user interfaces, and solving real-world programming problems..."
+                style="width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; line-height: 1.5; resize: vertical; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+            
+            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">Quick Suggestions:</span>
+                <button type="button" class="chip-btn" onclick="addInterest('building modern responsive web applications')">+ Web Dev</button>
+                <button type="button" class="chip-btn" onclick="addInterest('data analysis, machine learning models, and statistics')">+ Data Science</button>
+                <button type="button" class="chip-btn" onclick="addInterest('cloud infrastructure, automated deployments, and linux')">+ DevOps</button>
+                <button type="button" class="chip-btn" onclick="addInterest('ui/ux design, figma wireframing, and user research')">+ UI/UX</button>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">
+                Technical & Soft Skills
+            </label>
+            <textarea name="skills" id="skillsInput" rows="3" required
+                placeholder="Example: Python, JavaScript, Problem Solving, Git, Database Management, Team Collaboration..."
+                style="width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; line-height: 1.5; resize: vertical; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+
+        <!-- Programming Languages & Frameworks -->
+        <div style="margin-bottom: 32px;">
+            <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main);">
+                Languages & Technologies You Know (Select all that apply)
+            </label>
+
+            <div class="tech-grid">
+                {% set tech_list = ['Python', 'Java', 'C', 'C++', 'C#', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Node.js', 'SQL', 'MySQL', 'Git', 'Linux', 'Docker'] %}
+                {% for tech in tech_list %}
+                <label class="tech-chip">
+                    <input type="checkbox" name="languages" value="{{ tech }}">
+                    <span>{{ tech }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 700;">
+            <span>🚀 Run AI Career Prediction</span>
+        </button>
+    </form>
+</div>
+
+<!-- Features Section -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 20px;">
+    <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size: 2rem; margin-bottom: 12px;">🤖</div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">ML-Powered Matching</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Trained machine learning models analyze your inputs to classify your ideal technical niche.
+        </p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size: 2rem; margin-bottom: 12px;">📊</div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Skill Gap Analysis</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Identify what skills you already possess and what critical competencies you need to learn.
+        </p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size: 2rem; margin-bottom: 12px;">📄</div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">ATS Resume Checker</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Upload your PDF or Word resume to test ATS keyword compatibility and section completeness.
+        </p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size: 2rem; margin-bottom: 12px;">⚖️</div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Career Comparison</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Compare salary trajectories, job roles, and growth opportunities side-by-side.
+        </p>
+    </div>
+</div>
+
+<style>
+    .chip-btn {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 3px 10px;
+        border-radius: var(--radius-sm);
+        font-size: 0.775rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .chip-btn:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    .tech-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+    }
+    .tech-chip:has(input:checked) {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        color: var(--primary-text);
+    }
+    .tech-chip input[type="checkbox"] {
+        accent-color: var(--primary);
+        width: 16px;
+        height: 16px;
+    }
+</style>
+
+<script>
+    function addInterest(phrase) {
+        const input = document.getElementById('interestInput');
+        if (input.value.trim()) {
+            input.value += ', ' + phrase;
+        } else {
+            input.value = phrase;
+        }
+        input.focus();
+    }
+
+    {% if profile %}
+    const autofillBtn = document.getElementById('autofillBtn');
+    if (autofillBtn) {
+        autofillBtn.addEventListener('click', () => {
+            const interestInput = document.getElementById('interestInput');
+            const skillsInput = document.getElementById('skillsInput');
+            
+            {% if profile.career_goal %}
+            interestInput.value = {{ profile.career_goal|tojson }};
+            {% endif %}
+
+            {% if profile.skills %}
+            skillsInput.value = {{ profile.skills|tojson }};
+            {% endif %}
+
+            {% if profile.languages %}
+            const savedLangs = {{ profile.languages|tojson }}.toLowerCase();
+            document.querySelectorAll('input[name="languages"]').forEach(cb => {
+                if (savedLangs.includes(cb.value.toLowerCase())) {
+                    cb.checked = true;
+                }
+            });
+            {% endif %}
+        });
+    }
+    {% endif %}
+</script>
+{% endblock %}

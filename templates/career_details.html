@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ career_name }} Roadmap & Details - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/careers" class="back-link">
+        <span>← All Careers</span>
+    </a>
+    <div style="display: flex; gap: 10px;">
+        <a href="/skill-gap/{{ career_name }}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚡ Check Skill Gap</span>
+        </a>
+        <a href="/compare?c={{ career_name }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚖️ Compare with Others</span>
+        </a>
+    </div>
+</div>
+
+<!-- Career Hero -->
+<div class="card" style="margin-bottom: 30px; padding: 36px; background: linear-gradient(135deg, #ffffff, #f0f7ff); border-color: #bae6fd;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div style="flex: 1; min-width: 300px;">
+            <div class="badge badge-success" style="margin-bottom: 12px; font-size: 0.85rem;">
+                <span>💼 Tech Specialization</span>
+            </div>
+            <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 12px;">
+                {{ career_name }}
+            </h1>
+            <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; max-width: 750px; margin-bottom: 18px;">
+                {{ data.description }}
+            </p>
+            <div style="font-size: 0.95rem; color: #0369a1; background: var(--secondary-light); border: 1px solid #bae6fd; padding: 12px 16px; border-radius: var(--radius-md); max-width: 750px;">
+                💡 <strong>Why pursue this?</strong> {{ data.reason }}
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 200px;">
+            <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Entry-Level CTC</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 4px;">{{ data.salary.entry }}</div>
+            </div>
+            <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Experienced CTC</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--success-text); margin-top: 4px;">{{ data.salary.experienced }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Required Technologies & Skills -->
+    <div class="card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🛠️</span> Core Technologies & Skills
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;">
+            {% for tech in technologies %}
+            <span class="badge" style="background: var(--primary-light); color: var(--primary-text); font-size: 0.9rem; padding: 6px 12px;">{{ tech }}</span>
+            {% endfor %}
+        </div>
+
+        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main);">
+            Target Job Roles & Designations
+        </h3>
+        <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.925rem; line-height: 1.7;">
+            {% for role in data.roles %}
+            <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Career Growth Ladder -->
+    <div class="card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🚀</span> Career Growth Ladder
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            {% for step in data.growth %}
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 28px; height: 28px; border-radius: 999px; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    {{ loop.index }}
+                </div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-main);">
+                    {{ step }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Roadmap & Projects -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Step by Step Learning Path -->
+    <div class="card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🗺️</span> Recommended Learning Roadmap
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% for item in roadmap %}
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="color: var(--primary); font-weight: 800; font-size: 0.9rem;">Step {{ loop.index }}:</span>
+                <span style="font-size: 0.925rem; color: var(--text-main);">{{ item }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Practical Portfolio Project Ideas -->
+    <div class="card">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>💻</span> Recommended Portfolio Projects
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+            {% for proj in projects %}
+            <div style="background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; font-weight: 600; font-size: 0.925rem; color: var(--text-main);">
+                🚀 {{ proj }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main);">
+            Recommended Learning Resources
+        </h3>
+        <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.925rem; line-height: 1.7;">
+            {% for res in resources %}
+            <li>{{ res }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 16px;">
+    <a href="/skill-gap/{{ career_name }}" class="btn btn-primary" style="padding: 12px 24px;">
+        <span>⚡ Test Your Readiness for {{ career_name }}</span>
+    </a>
+</div>
+{% endblock %}

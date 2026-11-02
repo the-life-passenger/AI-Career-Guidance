@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Gap Analysis: {{ career_name }} - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/career-details/{{ career_name }}" class="back-link">
+        <span>← Career Details</span>
+    </a>
+    <div style="display: flex; gap: 10px;">
+        <a href="/compare?c={{ career_name }}" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.875rem;">
+            <span>⚖️ Compare Career</span>
+        </a>
+        <a href="/" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>🎯 Re-run Assessment</span>
+        </a>
+    </div>
+</div>
+
+<div style="text-align: center; max-width: 700px; margin: 0 auto 30px;">
+    <span class="badge badge-warning" style="margin-bottom: 12px; font-size: 0.85rem;">⚡ Competency Audit</span>
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 8px;">
+        Skill Gap Analysis: {{ career_name }}
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">
+        Benchmarking your skills against industry requirements to pinpoint growth areas.
+    </p>
+</div>
+
+<!-- Score Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <div class="card" style="text-align: center; padding: 32px;">
+        <div style="font-size: 0.875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Current Readiness</div>
+        <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary); margin: 8px 0; line-height: 1;">
+            {{ readiness_score }}%
+        </div>
+        <span class="badge badge-success" style="font-size: 0.85rem;">{{ readiness_label }}</span>
+        <div style="height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 20px;">
+            <div style="height: 100%; width: {{ readiness_score }}%; background: var(--primary); border-radius: 999px;"></div>
+        </div>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 32px;">
+        <div style="font-size: 0.875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Calculated Skill Gap</div>
+        <div style="font-size: 3.5rem; font-weight: 800; color: #dc2626; margin: 8px 0; line-height: 1;">
+            {{ skill_gap_percentage }}%
+        </div>
+        <span class="badge" style="background: var(--danger-light); color: #991b1b; font-size: 0.85rem;">
+            {% if skill_gap_percentage == 0 %}Complete Match{% else %}Skills to Acquire{% endif %}
+        </span>
+        <div style="height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 20px;">
+            <div style="height: 100%; width: {{ skill_gap_percentage }}%; background: #dc2626; border-radius: 999px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Skills Lists -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Matched Skills -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>✅</span> Skills You Already Possess ({{ matched_skills|length }})
+        </h2>
+        {% if matched_skills %}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for skill in matched_skills %}
+                <span class="badge badge-success" style="font-size: 0.9rem; padding: 6px 14px;">{{ skill }}</span>
+                {% endfor %}
+            </div>
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); background: var(--bg-main); padding: 14px; border-radius: var(--radius-md);">
+                Great job! You already meet {{ matched_skills|length }} core prerequisite(s) for this position.
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                No matching skills were detected from your recent assessment. You can begin learning the fundamentals listed in the missing skills panel.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Missing Skills -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🎯</span> Recommended Skills to Bridge the Gap ({{ missing_skills|length }})
+        </h2>
+        {% if missing_skills %}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for skill in missing_skills %}
+                <span class="badge" style="background: var(--danger-light); color: #991b1b; font-size: 0.9rem; padding: 6px 14px;">{{ skill }}</span>
+                {% endfor %}
+            </div>
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); background: var(--bg-main); padding: 14px; border-radius: var(--radius-md);">
+                💡 Prioritize learning these technologies in order to achieve strong job readiness for <strong>{{ career_name }}</strong>.
+            </div>
+        {% else %}
+            <div style="color: var(--success-text); font-weight: 700; font-size: 1.05rem;">
+                🎉 Congratulations! You currently cover all core listed technical skills for this role!
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 16px;">
+    <a href="/career-details/{{ career_name }}" class="btn btn-secondary">
+        <span>📖 View Career Roadmap & Projects</span>
+    </a>
+    <a href="/resume" class="btn btn-primary">
+        <span>📄 Test Your Resume for This Career</span>
+    </a>
+</div>
+{% endblock %}

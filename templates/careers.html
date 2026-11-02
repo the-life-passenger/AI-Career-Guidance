@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Tech Careers - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <div>
+        <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">🧭 Explore Tech Careers</h1>
+        <p style="color: var(--text-muted); margin-top: 4px;">Discover trending tech career paths, required skills, and salary outlooks.</p>
+    </div>
+    <a href="/" class="btn btn-primary">
+        <span>⚡ Take Career Assessment</span>
+    </a>
+</div>
+
+<!-- Search & Category Filters -->
+<div class="card" style="margin-bottom: 30px; padding: 20px;">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="flex: 1; min-width: 260px;">
+            <input type="text" id="careerSearch" placeholder="🔍 Search career by title, skill, or keyword..." 
+                   style="width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="filterTags">
+            <button class="filter-btn active" onclick="filterCategory('all', this)">All ({{ careers|length }})</button>
+            <button class="filter-btn" onclick="filterCategory('development', this)">Development</button>
+            <button class="filter-btn" onclick="filterCategory('data', this)">Data & AI</button>
+            <button class="filter-btn" onclick="filterCategory('design', this)">Design</button>
+            <button class="filter-btn" onclick="filterCategory('infra', this)">DevOps & Cloud</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .filter-btn {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        padding: 8px 16px;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .filter-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    .filter-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+    .career-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 24px;
+    }
+    .career-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        padding: 24px;
+        transition: all 0.25s ease;
+    }
+    .career-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        border-color: #cbd5e1;
+    }
+    .skill-tag {
+        background: var(--primary-light);
+        color: var(--primary-text);
+        padding: 4px 10px;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="career-grid" id="careerCards">
+    {% for name, info in careers.items() %}
+    {% set category = 'development' %}
+    {% if 'Data' in name or 'Analyst' in name or 'Scientist' in name or 'Database' in name %}
+        {% set category = 'data' %}
+    {% elif 'Design' in name or 'UI' in name %}
+        {% set category = 'design' %}
+    {% elif 'DevOps' in name %}
+        {% set category = 'infra' %}
+    {% endif %}
+    
+    <div class="career-card" data-category="{{ category }}" data-name="{{ name|lower }}" data-skills="{{ info.skills|join(' ')|lower }}">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">{{ name }}</h3>
+                <span class="badge badge-success">{{ info.salary.entry }}</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.6; margin-bottom: 16px;">
+                {{ info.description }}
+            </p>
+            
+            <div style="margin-bottom: 18px;">
+                <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); margin-bottom: 8px;">
+                    Essential Skills
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    {% for skill in info.skills %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Exp: <strong style="color: var(--text-main);">{{ info.salary.experienced }}</strong>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <a href="/skill-gap/{{ name }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.825rem;" title="Analyze Skill Gap">
+                    ⚡ Gap
+                </a>
+                <a href="/career-details/{{ name }}" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.825rem;">
+                    Details →
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function filterCategory(cat, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const cards = document.querySelectorAll('.career-card');
+        const query = document.getElementById('careerSearch').value.toLowerCase().trim();
+        
+        cards.forEach(card => {
+            const cardCat = card.dataset.category;
+            const cardName = card.dataset.name;
+            const cardSkills = card.dataset.skills;
+            const matchesCat = (cat === 'all' || cardCat === cat);
+            const matchesQuery = !query || cardName.includes(query) || cardSkills.includes(query);
+            
+            card.style.display = (matchesCat && matchesQuery) ? 'flex' : 'none';
+        });
+    }
+
+    document.getElementById('careerSearch').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const activeFilter = document.querySelector('.filter-btn.active').getAttribute('onclick');
+        const cards = document.querySelectorAll('.career-card');
+        
+        cards.forEach(card => {
+            const cardName = card.dataset.name;
+            const cardSkills = card.dataset.skills;
+            const cardCat = card.dataset.skills;
+            const matchesQuery = !query || cardName.includes(query) || cardSkills.includes(query);
+            card.style.display = matchesQuery ? 'flex' : 'none';
+        });
+    });
+</script>
+{% endblock %}

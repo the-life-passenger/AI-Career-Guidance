@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}AI Resume Analyzer - CareerAI{% endblock %}
+
+{% block content %}
+<div style="text-align: center; max-width: 700px; margin: 10px auto 35px;">
+    <div class="badge" style="margin-bottom: 14px; padding: 6px 14px; font-size: 0.85rem;">
+        <span>📄 ATS & Natural Language Processing</span>
+    </div>
+    <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 12px;">
+        AI Resume Analyzer & ATS Scorer
+    </h1>
+    <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.6;">
+        Upload your resume in PDF or DOCX format to receive an ATS compatibility score, detect technical skills, and pinpoint missing keywords for your target tech career.
+    </p>
+</div>
+
+<!-- Upload Card -->
+<div class="card" style="max-width: 750px; margin: 0 auto 40px; padding: 36px;">
+    {% if error %}
+    <div class="flash-alert error" style="margin-bottom: 24px;">
+        <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form action="/analyze-resume" method="POST" enctype="multipart/form-data" id="resumeForm">
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('resumeFile').click()">
+            <div style="font-size: 3rem; margin-bottom: 12px; color: var(--primary);">📂</div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+                Click to upload or drag & drop your resume
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                Supports text-based PDF and DOCX files (Maximum 5 MB)
+            </p>
+            <input type="file" id="resumeFile" name="resume" accept=".pdf,.docx" style="display: none;" required onchange="handleFileSelect(this)">
+            <button type="button" class="btn btn-secondary" style="pointer-events: none;">
+                <span>Choose Document</span>
+            </button>
+            <div id="fileDisplay" style="display: none; margin-top: 16px; font-weight: 700; color: var(--primary);"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 700; margin-top: 24px;">
+            <span>⚡ Analyze My Resume</span>
+        </button>
+    </form>
+</div>
+
+<!-- Benefits Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 950px; margin: 0 auto;">
+    <div class="card" style="padding: 22px;">
+        <div style="font-size: 1.75rem; margin-bottom: 10px;">🎯</div>
+        <h4 style="font-weight: 700; margin-bottom: 6px; color: var(--text-main);">ATS Compatibility</h4>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+            Detects key resume sections like Education, Experience, Contact info, and Projects to ensure ATS parsing success.
+        </p>
+    </div>
+
+    <div class="card" style="padding: 22px;">
+        <div style="font-size: 1.75rem; margin-bottom: 10px;">🔍</div>
+        <h4 style="font-weight: 700; margin-bottom: 6px; color: var(--text-main);">Skill Detection</h4>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+            Extracts frameworks, programming languages, databases, and dev tools found in your resume text.
+        </p>
+    </div>
+
+    <div class="card" style="padding: 22px;">
+        <div style="font-size: 1.75rem; margin-bottom: 10px;">📈</div>
+        <h4 style="font-weight: 700; margin-bottom: 6px; color: var(--text-main);">Career Match Score</h4>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+            Scores your profile against 12+ tech tracks and generates actionable suggestions to improve your resume.
+        </p>
+    </div>
+</div>
+
+<style>
+    .drop-zone {
+        border: 2px dashed #cbd5e1;
+        background: var(--bg-main);
+        border-radius: var(--radius-lg);
+        padding: 40px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+</style>
+
+<script>
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const display = document.getElementById('fileDisplay');
+            display.style.display = 'block';
+            display.textContent = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        }
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+    });
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+            document.getElementById('resumeFile').files = files;
+            handleFileSelect(document.getElementById('resumeFile'));
+        }
+    });
+</script>
+{% endblock %}

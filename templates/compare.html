@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Career Comparison - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/" class="back-link">
+        <span>← Back to Assessment</span>
+    </a>
+    <button onclick="window.print()" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.875rem;">
+        <span>🖨️ Print Comparison</span>
+    </button>
+</div>
+
+<div style="text-align: center; max-width: 700px; margin: 0 auto 30px;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 8px;">
+        ⚖️ Side-by-Side Career Comparison
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">
+        Compare technical skills, salary expectations, role expectations, and career ladders across key tech specializations.
+    </p>
+</div>
+
+<!-- Interactive Career Selector -->
+<div class="card" style="margin-bottom: 32px; padding: 22px;">
+    <form action="/compare" method="GET" style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; justify-content: center;">
+        <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; font-size: 0.825rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Career 1</label>
+            <select name="c" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; background: white;">
+                {% for name in all_careers %}
+                <option value="{{ name }}" {% if selected_careers|length > 0 and selected_careers[0] == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; font-size: 0.825rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Career 2</label>
+            <select name="c" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; background: white;">
+                {% for name in all_careers %}
+                <option value="{{ name }}" {% if selected_careers|length > 1 and selected_careers[1] == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; font-size: 0.825rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Career 3 (Optional)</label>
+            <select name="c" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; background: white;">
+                <option value="">-- None --</option>
+                {% for name in all_careers %}
+                <option value="{{ name }}" {% if selected_careers|length > 2 and selected_careers[2] == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">
+                <span>Update Comparison</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Comparison Table Card -->
+<div class="card" style="padding: 0; overflow-x: auto; margin-bottom: 32px;">
+    {% if comparison_data %}
+    <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 750px;">
+        <thead>
+            <tr style="background: var(--bg-main); border-bottom: 2px solid var(--border);">
+                <th style="padding: 18px 24px; font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; width: 180px;">Metric</th>
+                {% for item in comparison_data %}
+                <th style="padding: 18px 24px; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+                    {{ item.name }}
+                    {% if item.match is defined and item.match > 0 %}
+                    <span class="badge badge-success" style="font-size: 0.75rem; margin-left: 8px;">{{ item.match }}% Match</span>
+                    {% endif %}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Entry Salary -->
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">💰 Entry Salary</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--primary);">
+                    {{ item.salary.entry }}
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Experienced Salary -->
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">📈 Experienced Salary</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--success-text);">
+                    {{ item.salary.experienced }}
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Core Skills -->
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">🛠️ Core Skills</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        {% for skill in item.skills %}
+                        <span class="badge" style="background: var(--primary-light); color: var(--primary-text); font-size: 0.8rem;">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Target Job Titles -->
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">👨‍💻 Target Roles</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px;">
+                    <ul style="padding-left: 18px; margin: 0; color: var(--text-main); font-size: 0.9rem; line-height: 1.6;">
+                        {% for role in item.roles %}
+                        <li>{{ role }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Career Growth Ladder -->
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">🚀 Growth Path</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        {% for step in item.growth %}
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem;">
+                            <span style="color: var(--primary); font-weight: 700;">{{ loop.index }}.</span>
+                            <span>{{ step }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Action Links -->
+            <tr>
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">🔗 Actions</td>
+                {% for item in comparison_data %}
+                <td style="padding: 16px 24px;">
+                    <div style="display: flex; gap: 8px;">
+                        <a href="/career-details/{{ item.name }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">
+                            Full Details
+                        </a>
+                        <a href="/skill-gap/{{ item.name }}" class="btn btn-primary" style="font-size: 0.8rem; padding: 6px 12px;">
+                            Skill Gap
+                        </a>
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+        <p>No careers selected for comparison. Please choose careers above to compare.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment History - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">📊 Assessment History</h1>
+        <p style="color: var(--text-muted); margin-top: 4px;">Review your previous AI career predictions, match ratings, and skill evaluations.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="/" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚡ New Assessment</span>
+        </a>
+        {% if history %}
+        <form action="/clear-history" method="POST" onsubmit="return confirm('Are you sure you want to delete all prediction history? Profile data will NOT be affected.');" style="display: inline;">
+            <button type="submit" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.875rem; color: #dc2626; border-color: #fecaca;">
+                <span>🗑️ Clear History</span>
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Search & Stats Header -->
+<div class="card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div style="flex: 1; min-width: 250px;">
+        <input type="text" id="historySearch" placeholder="🔍 Search history by career, skill, or keyword..." 
+               style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; outline: none;">
+    </div>
+    <div style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600;">
+        Total Records: <strong style="color: var(--text-main);">{{ history|length }}</strong>
+    </div>
+</div>
+
+<!-- History Table Card -->
+<div class="card" style="padding: 0; overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;" id="historyTable">
+        <thead>
+            <tr style="background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; width: 60px;">#</th>
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Top Recommended Career</th>
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Match Fit</th>
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Key Interests & Skills</th>
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Date / Time</th>
+                <th style="padding: 14px 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if history %}
+                {% for row in history %}
+                <tr style="border-bottom: 1px solid var(--border);" class="history-row">
+                    <td style="padding: 16px 20px; font-weight: 700; color: var(--text-light);">{{ loop.index }}</td>
+                    <td style="padding: 16px 20px;">
+                        <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">
+                            {{ row['top_career'] }}
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge badge-success" style="font-size: 0.85rem;">{{ row['match_percentage'] }}%</span>
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px; max-width: 320px;">
+                        <div style="font-size: 0.875rem; color: var(--text-main); line-height: 1.4; word-break: break-word;">
+                            {% if row['interest'] %}
+                            <div><strong>Interest:</strong> {{ row['interest']|truncate(60) }}</div>
+                            {% endif %}
+                            {% if row['skills'] or row['languages'] %}
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 3px;">
+                                <strong>Skills:</strong> {{ (row['skills'] ~ ' ' ~ row['languages'])|truncate(60) }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px; font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">
+                        {{ row['created_at'] }}
+                    </td>
+                    <td style="padding: 16px 20px; text-align: right; white-space: nowrap;">
+                        <a href="/career-details/{{ row['top_career'] }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">
+                            Details
+                        </a>
+                        <a href="/skill-gap/{{ row['top_career'] }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">
+                            Gap
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">📭</div>
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">No Assessment Records Yet</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 16px;">Take a free career assessment to see your predictions logged here.</p>
+                        <a href="/" class="btn btn-primary" style="font-size: 0.9rem;">Start Career Assessment</a>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('historySearch').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.history-row');
+        
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">👤 My Professional Profile</h1>
+        <p style="color: var(--text-muted); margin-top: 4px;">Manage your personal details, career aspirations, and technical proficiencies.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="/edit-profile" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.875rem;">
+            <span>✏️ Edit Profile</span>
+        </a>
+        <a href="/" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚡ Use Profile in Assessment</span>
+        </a>
+    </div>
+</div>
+
+<!-- Profile Card Header -->
+<div class="card" style="margin-bottom: 30px; padding: 32px; background: linear-gradient(135deg, #ffffff, #f5f3ff); border-color: #ddd6fe;">
+    <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+        <!-- Avatar Circle with User Initial -->
+        <div style="width: 80px; height: 80px; border-radius: 999px; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3); flex-shrink: 0;">
+            {% if profile and profile.name %}
+                {{ profile.name[0]|upper }}
+            {% else %}
+                ?
+            {% endif %}
+        </div>
+
+        <div style="flex: 1; min-width: 250px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">
+                    {% if profile and profile.name %}{{ profile.name }}{% else %}Tech Aspirant{% endif %}
+                </h2>
+                {% if profile and profile.career_goal %}
+                <span class="badge" style="background: var(--primary-light); color: var(--primary-text); font-size: 0.85rem;">
+                    🎯 Target: {{ profile.career_goal }}
+                </span>
+                {% endif %}
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                {% if profile and profile.email %}📧 {{ profile.email }}{% else %}No email provided{% endif %}
+                {% if profile and profile.education %} &bull; 🎓 {{ profile.education }}{% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Details Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Technical & Soft Skills -->
+    <div class="card">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🛠️</span> Technical & Professional Skills
+        </h3>
+        {% if profile and profile.skills %}
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for skill in profile.skills.split(',') %}
+                {% if skill.strip() %}
+                <span class="badge badge-success" style="font-size: 0.85rem; padding: 6px 12px;">{{ skill.strip() }}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+                No skills listed yet. Click "Edit Profile" to add your core competencies.
+            </p>
+        {% endif %}
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin: 20px 0 10px; color: var(--text-main);">
+            Programming Languages & Tools
+        </h4>
+        {% if profile and profile.languages %}
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                {% for lang in profile.languages.split(',') %}
+                {% if lang.strip() %}
+                <span class="badge" style="background: var(--primary-light); color: var(--primary-text); font-size: 0.8rem;">{{ lang.strip() }}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">
+                No programming languages specified.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- About & Career Goals -->
+    <div class="card">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>📝</span> About Me & Career Aspirations
+        </h3>
+        
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 6px;">
+                Primary Career Goal
+            </div>
+            <div style="font-size: 1rem; font-weight: 600; color: var(--text-main);">
+                {% if profile and profile.career_goal %}
+                    {{ profile.career_goal }}
+                {% else %}
+                    <span style="color: var(--text-muted); font-weight: 400; font-style: italic;">Not specified yet</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 6px;">
+                Professional Biography
+            </div>
+            <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+                {% if profile and profile.about %}
+                    {{ profile.about }}
+                {% else %}
+                    <span style="font-style: italic;">Tell recruiters and AI about your background, passion projects, and key accomplishments.</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 16px;">
+    <a href="/edit-profile" class="btn btn-primary" style="padding: 10px 24px;">
+        <span>✏️ Update Profile Details</span>
+    </a>
+    <a href="/" class="btn btn-secondary" style="padding: 10px 24px;">
+        <span>🎯 Run Career Assessment</span>
+    </a>
+</div>
+{% endblock %}

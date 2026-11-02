@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account - CareerAI{% endblock %}
+
+{% block content %}
+<div style="max-width: 520px; margin: 30px auto;">
+    <div class="card" style="padding: 36px;">
+        <div style="text-align: center; margin-bottom: 28px;">
+            <div class="nav-brand-icon" style="margin: 0 auto 16px; width: 48px; height: 48px;">
+                <span style="font-size: 1.5rem;">🚀</span>
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+                Create Your Account
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
+                Get personalized career roadmaps and track your technical skill progress.
+            </p>
+        </div>
+
+        <form action="/register" method="POST" onsubmit="return validatePasswords()">
+            <div style="margin-bottom: 18px;">
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                    Full Name *
+                </label>
+                <input type="text" name="name" required placeholder="e.g. Aman Verma"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                    Email Address *
+                </label>
+                <input type="email" name="email" required placeholder="e.g. aman@example.com"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                        Password *
+                    </label>
+                    <input type="password" id="regPassword" name="password" required placeholder="••••••••" minlength="6"
+                        style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                        Confirm Password *
+                    </label>
+                    <input type="password" id="regConfirm" name="confirm_password" required placeholder="••••••••" minlength="6"
+                        style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                    Education / Degree (Optional)
+                </label>
+                <input type="text" name="education" placeholder="e.g. B.Tech Computer Science, 3rd Year"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-main);">
+                    Target Career Goal (Optional)
+                </label>
+                <input type="text" name="career_goal" placeholder="e.g. Full Stack Developer, Data Analyst"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 1rem; font-weight: 700;">
+                <span>Complete Registration</span>
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+            Already have an account? 
+            <a href="/login" style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign in here</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validatePasswords() {
+        const p1 = document.getElementById('regPassword').value;
+        const p2 = document.getElementById('regConfirm').value;
+        if (p1 !== p2) {
+            alert('Passwords do not match. Please verify your password.');
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

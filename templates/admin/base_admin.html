@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-wrapper" style="margin-bottom: 30px;">
+    <!-- Admin Top Nav Bar -->
+    <div class="card" style="padding: 14px 24px; margin-bottom: 24px; background: white; border-color: #cbd5e1;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.9rem; padding: 6px 12px; font-weight: 800;">
+                    👑 Admin Console
+                </span>
+                <span style="font-weight: 700; color: var(--text-main); font-size: 1.1rem;">Platform Control Center</span>
+            </div>
+
+            <!-- Admin Subnav Tabs -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="/admin" class="admin-tab {% if request.path == '/admin' %}active{% endif %}">
+                    <span>📊</span> Analytics
+                </a>
+                <a href="/admin/users" class="admin-tab {% if '/admin/users' in request.path %}active{% endif %}">
+                    <span>👥</span> Users ({{ stats.total_users if stats else '' }})
+                </a>
+                <a href="/admin/careers" class="admin-tab {% if '/admin/careers' in request.path %}active{% endif %}">
+                    <span>💼</span> Careers ({{ stats.total_careers if stats else '' }})
+                </a>
+                <a href="/admin/history" class="admin-tab {% if '/admin/history' in request.path %}active{% endif %}">
+                    <span>📜</span> Prediction Logs
+                </a>
+                <a href="/" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">
+                    <span>🌐 View Live App</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Page Content -->
+    {% block admin_content %}{% endblock %}
+</div>
+
+<style>
+    .admin-tab {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 700;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .admin-tab:hover {
+        background: var(--bg-main);
+        color: var(--primary);
+    }
+    .admin-tab.active {
+        background: var(--primary);
+        color: white;
+    }
+</style>
+{% endblock %}

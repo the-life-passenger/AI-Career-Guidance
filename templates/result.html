@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}{{ top_career }} - Career Assessment Result - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/" class="back-link">
+        <span>← Back to Assessment</span>
+    </a>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="window.print()" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.875rem;">
+            <span>🖨️ Print / Save PDF</span>
+        </button>
+        <a href="/compare" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚖️ Compare Top Careers</span>
+        </a>
+    </div>
+</div>
+
+<!-- Header / Hero Result Card -->
+<div class="card" style="margin-bottom: 30px; padding: 36px; background: linear-gradient(135deg, #ffffff, #f8faff); position: relative; overflow: hidden; border-color: #c7d2fe;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px;">
+        <div style="flex: 1; min-width: 300px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <span class="badge badge-success" style="font-size: 0.85rem; padding: 6px 12px;">🎯 Top Recommendation</span>
+                <span class="badge" style="background: #e0e7ff; color: #3730a3; font-size: 0.85rem;">🤖 ML Confidence: {{ confidence }} ({{ ml_confidence }}%)</span>
+            </div>
+            
+            <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 10px;">
+                {{ top_career }}
+            </h1>
+            
+            <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; max-width: 700px; margin-bottom: 20px;">
+                {{ description }}
+            </p>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 18px;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Entry Salary</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">{{ salary.entry }}</div>
+                </div>
+                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 18px;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Experienced Salary</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--success-text);">{{ salary.experienced }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Score Ring / Badge -->
+        <div style="text-align: center; background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px 32px; box-shadow: var(--shadow-sm); min-width: 170px;">
+            <div style="font-size: 3rem; font-weight: 800; color: var(--primary); line-height: 1;">
+                {{ readiness_score }}%
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-top: 6px;">Skill Match</div>
+            <div class="badge badge-success" style="margin-top: 10px; font-size: 0.75rem;">
+                {{ readiness_label }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Analysis & Scores Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- AI Evaluation Details -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🧠</span> AI Matching Analysis
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+            {{ ai_analysis }}
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                    <span>Interest Alignment</span>
+                    <span>{{ interest_score }}/30 pts</span>
+                </div>
+                <div style="height: 8px; background: var(--border); border-radius: 999px; overflow: hidden;">
+                    <div style="height: 100%; width: {{ (interest_score / 30) * 100 }}%; background: var(--secondary); border-radius: 999px;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                    <span>Skill Compatibility</span>
+                    <span>{{ skill_score }}/50 pts</span>
+                </div>
+                <div style="height: 8px; background: var(--border); border-radius: 999px; overflow: hidden;">
+                    <div style="height: 100%; width: {{ (skill_score / 50) * 100 }}%; background: var(--primary); border-radius: 999px;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                    <span>Overall Match Readiness</span>
+                    <span>{{ overall_score }}/100</span>
+                </div>
+                <div style="height: 8px; background: var(--border); border-radius: 999px; overflow: hidden;">
+                    <div style="height: 100%; width: {{ overall_score }}%; background: var(--success); border-radius: 999px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Comparison -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🛠️</span> Skills Breakdown
+        </h2>
+
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--success-text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>✅</span> Skills You Already Have ({{ have_skills|length }})
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                {% if have_skills %}
+                    {% for s in have_skills %}
+                    <span class="badge badge-success">{{ s }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span style="font-size: 0.875rem; color: var(--text-light); font-style: italic;">No direct core skills identified yet.</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #991b1b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>🎯</span> Recommended Next Skills to Learn ({{ missing_skills|length }})
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                {% if missing_skills %}
+                    {% for s in missing_skills %}
+                    <span class="badge" style="background: var(--danger-light); color: #991b1b;">{{ s }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span style="font-size: 0.875rem; color: var(--success-text); font-weight: 600;">You meet all core skills for this career!</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+            <a href="/skill-gap/{{ top_career }}" class="btn btn-secondary" style="width: 100%; font-size: 0.9rem;">
+                <span>⚡ Open Detailed Skill Gap Analyzer</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Roadmap & Career Growth -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Step by Step Roadmap -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🗺️</span> Recommended Learning Roadmap
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            {% for step in roadmap %}
+            <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div style="width: 26px; height: 26px; border-radius: 999px; background: var(--primary-light); color: var(--primary); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                    {{ loop.index }}
+                </div>
+                <div style="font-size: 0.925rem; color: var(--text-main); line-height: 1.5;">
+                    {{ step }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Career Progression Path & Roles -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🚀</span> Career Progression & Job Roles
+        </h2>
+
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 10px;">
+                Progression Ladder
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                {% for role in growth %}
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 8px; height: 8px; border-radius: 999px; background: var(--primary);"></div>
+                    <div style="font-size: 0.925rem; font-weight: 600; color: var(--text-main);">{{ role }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 10px;">
+                Related Target Job Titles
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                {% for role in recommended_job_roles %}
+                <span class="badge" style="background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border);">{{ role }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Other Career Recommendations -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+        <span>📊</span> Other Matched Careers
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+        {% for career_name, percentage in careers %}
+        {% if career_name != top_career %}
+        <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">{{ career_name }}</h3>
+                    <span class="badge badge-success">{{ percentage }}%</span>
+                </div>
+                <div style="height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 12px;">
+                    <div style="height: 100%; width: {{ percentage }}%; background: var(--primary); border-radius: 999px;"></div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <a href="/career-details/{{ career_name }}" class="btn btn-secondary" style="flex: 1; padding: 6px 10px; font-size: 0.8rem;">
+                    Details
+                </a>
+                <a href="/skill-gap/{{ career_name }}" class="btn btn-secondary" style="flex: 1; padding: 6px 10px; font-size: 0.8rem;">
+                    Gap
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Bottom Action Bar -->
+<div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+    <a href="/" class="btn btn-secondary">
+        <span>🔄 Re-take Assessment</span>
+    </a>
+    <a href="/resume" class="btn btn-secondary">
+        <span>📄 Analyze Resume with AI</span>
+    </a>
+    <a href="/compare" class="btn btn-primary">
+        <span>⚖️ Compare Careers Side-by-Side</span>
+    </a>
+</div>
+{% endblock %}

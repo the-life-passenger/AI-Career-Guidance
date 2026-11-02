@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/profile" class="back-link">
+        <span>← Back to Profile</span>
+    </a>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto; padding: 36px;">
+    <div style="border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 24px;">
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+            ✏️ Edit Your Profile
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
+            Update your professional information. This data can also be used to automatically populate your career assessment forms.
+        </p>
+    </div>
+
+    <form action="/edit-profile" method="POST">
+        <!-- Name & Email -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                    Full Name
+                </label>
+                <input type="text" name="name" value="{{ profile.name if profile else '' }}" placeholder="e.g. Rahul Sharma"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                    Email Address
+                </label>
+                <input type="email" name="email" value="{{ profile.email if profile else '' }}" placeholder="e.g. rahul.sharma@example.com"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+        </div>
+
+        <!-- Education & Career Goal -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                    Education / Degree
+                </label>
+                <input type="text" name="education" value="{{ profile.education if profile else '' }}" placeholder="e.g. B.Tech Computer Science, 2026"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                    Aspirational Career Goal
+                </label>
+                <input type="text" name="career_goal" value="{{ profile.career_goal if profile else '' }}" placeholder="e.g. Full Stack Developer, Data Scientist"
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                Technical & Soft Skills (Comma separated)
+            </label>
+            <input type="text" name="skills" value="{{ profile.skills if profile else '' }}" placeholder="e.g. Python, SQL, REST APIs, Git, Problem Solving, Docker"
+                style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+        </div>
+
+        <!-- Languages -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                Programming Languages Known (Comma separated)
+            </label>
+            <input type="text" name="languages" value="{{ profile.languages if profile else '' }}" placeholder="e.g. Python, JavaScript, Java, C++, SQL"
+                style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; outline: none;">
+        </div>
+
+        <!-- About -->
+        <div style="margin-bottom: 28px;">
+            <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-main);">
+                Professional Summary / About Me
+            </label>
+            <textarea name="about" rows="4" placeholder="Briefly describe your experience, projects, or what technologies you are currently learning..."
+                style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.95rem; line-height: 1.5; resize: vertical; outline: none;">{{ profile.about if profile else '' }}</textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 14px; justify-content: flex-end;">
+            <a href="/profile" class="btn btn-secondary">
+                <span>Cancel</span>
+            </a>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">
+                <span>💾 Save Profile</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

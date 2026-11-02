@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Resume ATS Analysis: {{ top_career }} - CareerAI{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-bar">
+    <a href="/resume" class="back-link">
+        <span>← Upload Another Resume</span>
+    </a>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="window.print()" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.875rem;">
+            <span>🖨️ Print ATS Report</span>
+        </button>
+        <a href="/compare?c={{ top_career }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.875rem;">
+            <span>⚖️ Compare Career</span>
+        </a>
+    </div>
+</div>
+
+<!-- Header Card -->
+<div class="card" style="margin-bottom: 30px; padding: 36px; background: linear-gradient(135deg, #ffffff, #f0fdf4); border-color: #bbf7d0;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px;">
+        <div style="flex: 1; min-width: 300px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <span class="badge badge-success" style="font-size: 0.85rem; padding: 6px 12px;">📄 Document: {{ filename }}</span>
+                <span class="badge" style="background: #e0f2fe; color: #0369a1; font-size: 0.85rem;">Word Count: {{ word_count }} words</span>
+            </div>
+            
+            <h1 style="font-size: 2.3rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; margin-bottom: 10px;">
+                Target Career Fit: {{ top_career }}
+            </h1>
+            
+            <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; max-width: 700px; margin-bottom: 20px;">
+                {{ ai_resume_analysis }}
+            </p>
+
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 18px;">
+                    <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Entry CTC</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">{{ salary.entry }}</div>
+                </div>
+                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 18px;">
+                    <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">Experienced CTC</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--success-text);">{{ salary.experienced }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scores -->
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div style="text-align: center; background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 20px 24px; min-width: 140px; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.75rem; font-weight: 800; color: var(--primary); line-height: 1;">
+                    {{ resume_score }}
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-top: 6px;">ATS Score / 100</div>
+                <div class="badge badge-success" style="margin-top: 8px; font-size: 0.725rem;">
+                    {% if resume_score >= 80 %}Strong Format{% elif resume_score >= 50 %}Fair Format{% else %}Needs Polish{% endif %}
+                </div>
+            </div>
+
+            <div style="text-align: center; background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 20px 24px; min-width: 140px; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.75rem; font-weight: 800; color: var(--success-text); line-height: 1;">
+                    {{ career_match }}%
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-top: 6px;">Role Match</div>
+                <div class="badge" style="margin-top: 8px; font-size: 0.725rem; background: var(--secondary-light); color: #0369a1;">
+                    {{ top_career }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ATS Checks & Suggestions Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- ATS Structural Audit -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>📋</span> ATS Structural Audit
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% for item, status in ats_checks %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <span style="font-size: 0.925rem; font-weight: 600; color: var(--text-main);">{{ item }}</span>
+                {% if status == 'Present' or status == 'Detected' %}
+                <span class="badge badge-success">✓ {{ status }}</span>
+                {% else %}
+                <span class="badge" style="background: var(--danger-light); color: #991b1b;">✕ {{ status }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Targeted Suggestions -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>💡</span> Actionable Resume Improvements
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% for sug in suggestions %}
+            <div style="display: flex; gap: 12px; align-items: flex-start; font-size: 0.925rem; color: var(--text-main); line-height: 1.5;">
+                <span style="color: var(--primary); font-weight: 800;">•</span>
+                <span>{{ sug }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Skills Detected & Missing Skills -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <!-- Skills Found in Resume -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🔍</span> Technical Skills Detected in Resume ({{ detected_skills|length }})
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% if detected_skills %}
+                {% for skill in detected_skills %}
+                <span class="badge badge-success" style="font-size: 0.9rem; padding: 6px 14px;">{{ skill }}</span>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">No tech skills identified. Make sure to list specific technologies under a Skills header.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Missing Keywords for Target Career -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>🎯</span> Recommended Keywords to Add for {{ top_career }}
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% if missing_skills %}
+                {% for skill in missing_skills %}
+                <span class="badge" style="background: var(--danger-light); color: #991b1b; font-size: 0.9rem; padding: 6px 14px;">+ {{ skill }}</span>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--success-text); font-weight: 600; font-size: 0.95rem;">You match all core keywords for {{ top_career }}!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Learning Roadmap -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+        <span>🗺️</span> Career Bridge Roadmap
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        {% for step in learning_roadmap %}
+        <div style="background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+            <div style="width: 26px; height: 26px; border-radius: 999px; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                {{ loop.index }}
+            </div>
+            <div style="font-size: 0.925rem; color: var(--text-main); line-height: 1.5;">{{ step }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Other Career Matches -->
+{% if other_careers %}
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+        <span>📊</span> Other Alternative Career Paths
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+        {% for c_name, c_score in other_careers %}
+        <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; color: var(--text-main);">{{ c_name }}</span>
+            <span class="badge badge-success">{{ c_score }}%</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+    <a href="/resume" class="btn btn-secondary">
+        <span>🔄 Upload New Resume</span>
+    </a>
+    <a href="/" class="btn btn-secondary">
+        <span>🎯 Full Career Assessment</span>
+    </a>
+    <a href="/career-details/{{ top_career }}" class="btn btn-primary">
+        <span>📖 View {{ top_career }} Roadmap</span>
+    </a>
+</div>
+{% endblock %}

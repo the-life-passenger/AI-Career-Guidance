@@ -1,0 +1,172 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Admin Dashboard & Analytics - CareerAI{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block admin_content %}
+<!-- Overview Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 28px;">
+    <div class="card" style="padding: 22px; border-left: 4px solid var(--primary);">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Users</div>
+        <div style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin: 4px 0;">{{ stats.total_users }}</div>
+        <a href="/admin/users" style="font-size: 0.825rem; color: var(--primary); font-weight: 600; text-decoration: none;">Manage Users →</a>
+    </div>
+
+    <div class="card" style="padding: 22px; border-left: 4px solid var(--success);">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Predictions</div>
+        <div style="font-size: 2rem; font-weight: 800; color: var(--success-text); margin: 4px 0;">{{ stats.total_history }}</div>
+        <a href="/admin/history" style="font-size: 0.825rem; color: var(--success-text); font-weight: 600; text-decoration: none;">View Logs →</a>
+    </div>
+
+    <div class="card" style="padding: 22px; border-left: 4px solid var(--secondary);">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Managed Careers</div>
+        <div style="font-size: 2rem; font-weight: 800; color: #0284c7; margin: 4px 0;">{{ stats.total_careers }}</div>
+        <a href="/admin/careers" style="font-size: 0.825rem; color: #0284c7; font-weight: 600; text-decoration: none;">Edit Careers Data →</a>
+    </div>
+
+    <div class="card" style="padding: 22px; border-left: 4px solid var(--warning);">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Average Match Rate</div>
+        <div style="font-size: 2rem; font-weight: 800; color: #b45309; margin: 4px 0;">{{ stats.avg_match }}%</div>
+        <span style="font-size: 0.825rem; color: var(--text-muted);">Across all assessments</span>
+    </div>
+</div>
+
+<!-- Charts & Analytics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 28px;">
+    <div class="card">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main);">
+            📊 Career Recommendation Frequency
+        </h3>
+        <div style="position: relative; height: 300px;">
+            <canvas id="adminBarChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main);">
+            🍩 Market Share Distribution
+        </h3>
+        <div style="position: relative; height: 300px;">
+            <canvas id="adminDonutChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Users & Activity Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px;">
+    <!-- Recent Users -->
+    <div class="card" style="padding: 0; overflow-x: auto;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">👥 Recent Registered Users</h4>
+            <a href="/admin/users" class="btn btn-secondary" style="font-size: 0.8rem; padding: 5px 10px;">All Users</a>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background: var(--bg-main); font-size: 0.775rem; color: var(--text-light); text-transform: uppercase;">
+                    <th style="padding: 12px 20px;">User</th>
+                    <th style="padding: 12px 20px;">Role</th>
+                    <th style="padding: 12px 20px; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in recent_users %}
+                <tr style="border-bottom: 1px solid var(--border); font-size: 0.9rem;">
+                    <td style="padding: 14px 20px;">
+                        <div style="font-weight: 700; color: var(--text-main);">{{ u['name'] }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ u['email'] }}</div>
+                    </td>
+                    <td style="padding: 14px 20px;">
+                        {% if u['role'] == 'admin' %}
+                        <span class="badge" style="background: #fef3c7; color: #92400e;">Admin</span>
+                        {% else %}
+                        <span class="badge">User</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 14px 20px; text-align: right;">
+                        <a href="/admin/users/{{ u['id'] }}/edit" class="btn btn-secondary" style="font-size: 0.775rem; padding: 4px 8px;">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Predictions -->
+    <div class="card" style="padding: 0; overflow-x: auto;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">⚡ Recent Assessment Logs</h4>
+            <a href="/admin/history" class="btn btn-secondary" style="font-size: 0.8rem; padding: 5px 10px;">All Logs</a>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background: var(--bg-main); font-size: 0.775rem; color: var(--text-light); text-transform: uppercase;">
+                    <th style="padding: 12px 20px;">Top Career</th>
+                    <th style="padding: 12px 20px;">Match</th>
+                    <th style="padding: 12px 20px;">User</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_logs %}
+                <tr style="border-bottom: 1px solid var(--border); font-size: 0.9rem;">
+                    <td style="padding: 14px 20px; font-weight: 700; color: var(--text-main);">
+                        {{ log['top_career'] }}
+                    </td>
+                    <td style="padding: 14px 20px;">
+                        <span class="badge badge-success">{{ log['match_percentage'] }}%</span>
+                    </td>
+                    <td style="padding: 14px 20px; font-size: 0.825rem; color: var(--text-muted);">
+                        {{ log['user_email'] or 'Guest' }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const careerCountsData = {{ career_counts|tojson }};
+    const labels = Object.keys(careerCountsData);
+    const counts = Object.values(careerCountsData);
+    const colors = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4', '#a855f7'];
+
+    if (labels.length > 0) {
+        new Chart(document.getElementById('adminBarChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                    x: { ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('adminDonutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{ data: counts, backgroundColor: colors.slice(0, labels.length) }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }
+            }
+        });
+    }
+</script>
+{% endblock %}

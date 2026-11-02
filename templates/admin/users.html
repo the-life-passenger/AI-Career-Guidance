@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Users - CareerAI Admin{% endblock %}
+
+{% block admin_content %}
+<div class="breadcrumb-bar">
+    <div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">👥 User Management</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">Monitor user profiles, edit account details, and manage roles.</p>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div style="flex: 1; min-width: 250px;">
+        <input type="text" id="userSearch" placeholder="🔍 Search users by name, email, or goal..." 
+               style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; outline: none;">
+    </div>
+    <div style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600;">
+        Registered Accounts: <strong style="color: var(--text-main);">{{ users|length }}</strong>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 850px;">
+        <thead>
+            <tr style="background: var(--bg-main); border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">
+                <th style="padding: 14px 20px;">ID</th>
+                <th style="padding: 14px 20px;">Name & Email</th>
+                <th style="padding: 14px 20px;">Role</th>
+                <th style="padding: 14px 20px;">Education & Target Goal</th>
+                <th style="padding: 14px 20px;">Registered</th>
+                <th style="padding: 14px 20px; text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr style="border-bottom: 1px solid var(--border);" class="user-row">
+                <td style="padding: 16px 20px; font-weight: 700; color: var(--text-light);">{{ u['id'] }}</td>
+                <td style="padding: 16px 20px;">
+                    <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">{{ u['name'] }}</div>
+                    <div style="font-size: 0.825rem; color: var(--text-muted);">{{ u['email'] }}</div>
+                </td>
+                <td style="padding: 16px 20px;">
+                    {% if u['role'] == 'admin' %}
+                    <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 800;">👑 Admin</span>
+                    {% else %}
+                    <span class="badge">User</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 16px 20px;">
+                    <div style="font-size: 0.9rem; color: var(--text-main);">{{ u['education'] or 'Not specified' }}</div>
+                    {% if u['career_goal'] %}
+                    <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 2px;">
+                        🎯 {{ u['career_goal'] }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td style="padding: 16px 20px; font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">
+                    {{ u['created_at'] }}
+                </td>
+                <td style="padding: 16px 20px; text-align: right; white-space: nowrap;">
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <a href="/admin/users/{{ u['id'] }}/edit" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">
+                            ✏️ Edit
+                        </a>
+                        {% if u['id'] != session.get('user_id') %}
+                        <form action="/admin/users/{{ u['id'] }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this user? All their assessments will also be detached.');">
+                            <button type="submit" class="btn btn-danger" style="font-size: 0.8rem; padding: 6px 10px;">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('userSearch').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.user-row');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}
